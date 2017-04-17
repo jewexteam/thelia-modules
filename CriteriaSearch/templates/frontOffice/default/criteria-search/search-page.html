@@ -29,7 +29,7 @@
                     <h4  id="categories-label">{$TITLE}</h4>
                     <select class="select-search" id="attribute-{$attributeId}" name="attributes[{$attributeId}][]" multiple="multiple">
                         {loop type="search_attribute_av" name="search_attribute_av_loop" attribute=$ID category={', '|implode:$categories} return_empty=false force_return=true}
-                            <option class="input-search" value="{$ID}">{$TITLE}</option>
+                            <option class="input-search" value="{$ID}" {if $checkedBox['attributes'][$attributeId][$ID]}selected{/if}>{$TITLE}</option>
                         {/loop}
                     </select>
                 </div>
@@ -42,7 +42,7 @@
                 <h4  id="search-label">{intl l="Brand" d="criteriasearch.fo.default"}</h4>
                 <select class="select-search" id="brand-{$ID}" name="brands[]" multiple="multiple">
                     {loop type="search_brand" name="brand-filter" category={', '|implode:$categories}}
-                        <option class="input-search" value="{$ID}">{$TITLE}</option>
+                        <option class="input-search" value="{$ID}" {if $checkedBox['brands'][$ID]}selected{/if}>{$TITLE}</option>
                     {/loop}
                 </select>
             </div>
@@ -52,19 +52,19 @@
         <h4  id="search-label">{intl l="Others filters" d="criteriasearch.fo.default"}</h4>
             {if $new_filter === "true"}
                 <div>
-                    <input class="input-search" id="is-new" type="checkbox" name="new" value="true">
+                    <input class="input-search" id="is-new" type="checkbox" name="new" value="true" {if $checkedBox['new']}checked{/if}>
                     <label for="is-new">{intl l="New" d="criteriasearch.fo.default"}</label>
                 </div>
             {/if}
             {if $promo_filter === "true"}
                 <div>
-                    <input class="input-search" id="is-promo" type="checkbox" name="promo" value="true">
+                    <input class="input-search" id="is-promo" type="checkbox" name="promo" value="true" {if $checkedBox['promo']}checked{/if}>
                     <label for="is-promo">{intl l="Promo" d="criteriasearch.fo.default"}</label>
                 </div>
             {/if}
             {if $stock_filter === "true"}
                 <div>
-                    <input class="input-search" id="in-stock" type="checkbox" name="in_stock" value="1">
+                    <input class="input-search" id="in-stock" type="checkbox" name="in_stock" value="1" {if $checkedBox['in_stock']}checked{/if}>
                     <label for="in-stock">{intl l="In stock" d="criteriasearch.fo.default"}</label>
                 </div>
             {/if}
@@ -106,5 +106,3 @@
         {include file="criteria-search/search-results.html"}
     </div>
 </div>
-
-

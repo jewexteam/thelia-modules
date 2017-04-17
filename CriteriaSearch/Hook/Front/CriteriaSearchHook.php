@@ -14,6 +14,9 @@ use Thelia\Model\ProductQuery;
 
 class CriteriaSearchHook extends BaseHook
 {
+    
+    protected $checkedBox;
+    
     /** @var CriteriaSearchHandler $criteriaSearchHandler */
     protected $criteriaSearchHandler;
 
@@ -23,6 +26,47 @@ class CriteriaSearchHook extends BaseHook
         $this->criteriaSearchHandler = $criteriaSearchHandler;
     }
 
+    protected function parseAttributeAvChecking()
+    {
+        $criteriasString = $this->getRequest()->query->get('attributes');
+        $checkedBox = [];
+        $criterias = explode(',', $criteriasString);
+        foreach ($criterias as $criteria) {
+            $criteriaParams = explode('_', $criteria);
+            $criteriaID = $criteriaParams[0];
+            $criteriaAvailabilities = array_fill_keys(explode("|", str_replace(['(',')'], '', $criteriaParams[1])), true);
+            $checkedBox[$criteriaID] = $criteriaAvailabilities;
+        }
+
+        $this->checkedBox['attributes'] = $checkedBox;
+    }
+    
+    protected function parseBrandChecking()
+    {
+        $criteriasString = $this->getRequest()->query->get('brands');
+        $checkedBox = [];
+        $brands = explode(',', $criteriasString);
+        $this->checkedBox['brands'] = array_fill_keys($brands, true);
+    }
+    
+    protected function parseIsPromoChecking()
+    {
+        $criteriasString = $this->getRequest()->query->get('promo');
+        $this->checkedBox['promo'] = $criteriasString ? true : false;
+    }
+    
+    protected function parseIsNewChecking()
+    {
+        $criteriasString = $this->getRequest()->query->get('new');
+        $this->checkedBox['new'] = $criteriasString ? true : false;
+    }
+    
+    protected function parseInStockChecking()
+    {
+        $criteriasString = $this->getRequest()->query->get('in_stock');
+        $this->checkedBox['in_stock'] = $criteriasString ? true : false;
+    }
+    
     public function onCriteriaSearchSearchCss(HookRenderEvent $event)
     {
         $event->add($this->render(
@@ -43,11 +87,18 @@ class CriteriaSearchHook extends BaseHook
         if (null !== $categorieTaxeRule && null !== $categorieTaxeRule->getTaxRuleId()) {
             $params['price_filter'] = CriteriaSearch::getConfigValue('price_filter');
         }
-
+        
         $params['brand_filter'] = CriteriaSearch::getConfigValue('brand_filter');
         $params['new_filter'] = CriteriaSearch::getConfigValue('new_filter');
         $params['promo_filter'] = CriteriaSearch::getConfigValue('promo_filter');
         $params['stock_filter'] = CriteriaSearch::getConfigValue('stock_filter');
+        
+        $this->parseAttributeAvChecking();
+        $this->parseBrandChecking();
+        $this->parseIsPromoChecking();
+        $this->parseIsNewChecking();
+        $this->parseInStockChecking();
+        $params['checkedBox'] = $this->checkedBox;
 
         $this->criteriaSearchHandler->getLoopParamsFromQuery($params, $request);
 

@@ -36,13 +36,13 @@ class SearchController extends BaseFrontController
 
         $this->container->get('criteriasearch.handler')->getLoopParamsFromAjaxQuery($params, $request);
 
-        $urlQuery = "?criteria=true";
+        $queryParams = array('criteria'=>true);
         foreach ($params as $paramKey => $paramValue) {
             if ($paramValue) {
-                $urlQuery .= "&".$paramKey."=".str_replace(":", "_",$paramValue);
+                $queryParams[$paramKey] = str_replace(":", "_",$paramValue);
             }
         }
-
+        $urlQuery = "?" . http_build_query(array_merge($_GET, $queryParams));
         return JsonResponse::create(["url" => $urlQuery]);
     }
 
@@ -100,5 +100,3 @@ class SearchController extends BaseFrontController
         }
     }
 }
-
-

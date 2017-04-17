@@ -127,7 +127,7 @@ jQuery(function($){
 
     function updateUrl() {
         $.ajax({
-            url : "/criteria/url/search/",
+            url : "/criteria/url/search/" + window.location.search,
             type: "GET",
             data: search_form.serialize()
         }).done(function(data) {
