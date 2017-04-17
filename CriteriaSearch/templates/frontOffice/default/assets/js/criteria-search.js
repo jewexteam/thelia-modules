@@ -18,7 +18,7 @@ jQuery(function($){
     var criteria = getURLParameter('criteria');
     var search_form = $('#criteria-search-form');
 
-    if (criteria == "true") {
+    if (criteria) {
         fillForm(true);
     }
 
