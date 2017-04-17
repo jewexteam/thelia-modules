@@ -19,7 +19,7 @@ jQuery(function($){
     var search_form = $('#criteria-search-form');
 
     if (criteria == "true") {
-        fillForm(false);
+        fillForm(true);
     }
 
     var searchTimer = null;
@@ -127,7 +127,7 @@ jQuery(function($){
 
     function updateUrl() {
         $.ajax({
-            url : "/criteria/url/search/" + window.location.search,
+            url : "/criteria/url/search/" + clearGetParameters(window.location.search),
             type: "GET",
             data: search_form.serialize()
         }).done(function(data) {
@@ -144,5 +144,36 @@ jQuery(function($){
 
     function getURLParameter(name) {
         return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
+    }
+    
+    function clearGetParameters(url) {
+       $(search_form).find('*[name]').each(function(i,e){
+           var attr = $(e).attr('name').replace(/\[.*\]/g, '');
+           url = removeURLParameter(url, attr);
+       });
+       return url;
+    }
+    
+    function removeURLParameter(url, parameter) {
+        //prefer to use l.search if you have a location/link object
+        var urlparts = url.split('?');   
+        if (urlparts.length>=2) {
+
+            var prefix = encodeURIComponent(parameter)+'=';
+            var pars = urlparts[1].split(/[&;]/g);
+
+            //reverse iteration as may be destructive
+            for (var i = pars.length; i-- > 0;) {    
+                //idiom for string.startsWith
+                if (pars[i].lastIndexOf(prefix, 0) !== -1) {  
+                    pars.splice(i, 1);
+                }
+            }
+
+            url = urlparts[0] + (pars.length > 0 ? '?' + pars.join('&') : "");
+            return url;
+        } else {
+            return url;
+        }
     }
 });
